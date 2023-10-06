@@ -21,8 +21,11 @@ namespace FotografYazdirma_19
         string resim;
         private void btn_ResimSec_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
-            resim = openFileDialog1.FileName;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                resim = openFileDialog1.FileName;
+                pictureBox1.Image = Image.FromFile(resim);
+            }
         }
 
         Color renk;
@@ -32,35 +35,54 @@ namespace FotografYazdirma_19
             renk = colorDialog1.Color;
         }
 
+        Font font;
+        private void btn_FontSec_Click(object sender, EventArgs e)
+        {
+            fontDialog1.ShowDialog();
+            font = fontDialog1.Font;
+        }
+
         Bitmap bmp;
         private void btn_Yazdir_Click(object sender, EventArgs e)
         {
             try
             {
-                if (txt_BirinciSatir.Text != "" && nutxt_MetinPunto.Value != null)
-                {
-                    //Font = new Font("SEGOE UI", Convert.ToInt16(nutxt_MetinPunto.Value), FontStyle.Bold);
+                bmp = new Bitmap(resim);
+                Graphics gr = Graphics.FromImage(bmp);
+                gr.DrawString(txt_BirinciSatir.Text, new Font(font.ToString(), Convert.ToInt16(nutxt_MetinPunto.Value)), new SolidBrush(renk), Convert.ToInt16(nutxt_XKonum.Value), Convert.ToInt16(nutxt_YKonum.Value));
 
-                    bmp = new Bitmap(resim);
-                    Graphics gr = Graphics.FromImage(bmp);
-                    gr.DrawString(txt_BirinciSatir.Text + "\n" + txt_İkinciSatir.Text, new Font("SEGOE UI", Convert.ToInt16(nutxt_MetinPunto.Value)), new SolidBrush(renk), 650, 250);
-                    pictureBox1.Image = bmp;
-                }
+                //switch (checkBox2.Checked) // Fontu italik ayarlama
+                //{
+                //    case true:
+                //        gr.DrawString(txt_BirinciSatir.Text, new Font("SEGOE UI", Convert.ToInt16(nutxt_MetinPunto.Value), FontStyle.Italic), new SolidBrush(renk), Convert.ToInt16(nutxt_XKonum.Value), Convert.ToInt16(nutxt_YKonum.Value));
+                //        break;
+                //    case false:
+                //        gr.DrawString(txt_BirinciSatir.Text, new Font("SEGOE UI", Convert.ToInt16(nutxt_MetinPunto.Value)), new SolidBrush(renk), Convert.ToInt16(nutxt_XKonum.Value), Convert.ToInt16(nutxt_YKonum.Value));
+                //        break;
+                //}
+                pictureBox1.Image = bmp;
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString(), "Metin fotoğraf üzerine yazdırılamadı.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message.ToString(), "Fotoğraf çıktı alınırken bir hata oluştu.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
 
         private void btn_Kaydet_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.Filter = "Resim|.png";
-            saveFileDialog1.ShowDialog();
-            saveFileDialog1.Title = "Fotoğrafı Farklı Kaydet";
-            bmp.Save(saveFileDialog1.FileName);
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                saveFileDialog1.Title = "Fotoğrafı Farklı Kaydet";
+                bmp.Save(saveFileDialog1.FileName);
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "PNG Dosyası|.png | JPEG Dosyası|.jpg";
+            
         }
     }
 }
